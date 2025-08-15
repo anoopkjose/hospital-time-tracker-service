@@ -49,7 +49,32 @@ namespace hospital_time_tracker_service.Controllers
                 if (lastVisit != null && lastVisit.Location == request.Location)
                 {
                     _context.Visits.Remove(lastVisit);
+.OrderByDescending(v => v.Timestamp)
+                    .FirstOrDefault();
+
+                // Remove duplicate consecutive scans and add new visit in a single transaction
+                using (var transaction = await _context.Database.BeginTransactionAsync())
+                {
+                    if (lastVisit != null && lastVisit.Location == request.Location)
+                    {
+                        _context.Visits.Remove(lastVisit);
+                    }
+
+                    var visit = new Visit 
+                    { 
+                        PatientId = request.PatientId, 
+                        Location = request.Location,
+                        Timestamp = request.Timestamp ?? DateTimeOffset.UtcNow
+                    };
+                    _context.Visits.Add(visit);
                     await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok(new { success = true, message = "Scan recorded successfully", timestamp = visit.Timestamp });
+                }
+            }
+            catch
+            {
                 }
 
                 var visit = new Visit 
