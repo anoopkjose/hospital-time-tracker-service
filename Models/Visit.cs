@@ -15,7 +15,9 @@ namespace hospital_time_tracker_service.Models
         public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.UtcNow;
         
         public string ScanType { get; set; } = "normal";
-        
+
+        // Date time with offset to handle time zones
+
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }
 }
