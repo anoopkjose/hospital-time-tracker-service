@@ -18,7 +18,15 @@ namespace hospital_time_tracker_service.Controllers
             _context = context;
         }
 
+// Import statement for ValidateAntiForgeryToken attribute
+        // This attribute is used to prevent Cross-Site Request Forgery (CSRF) attacks
+        using Microsoft.AspNetCore.Mvc;
+
         [HttpPost("scan")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Scan([FromBody] ScanRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.PatientId) || string.IsNullOrWhiteSpace(request.Location))
         public async Task<IActionResult> Scan([FromBody] ScanRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.PatientId) || string.IsNullOrWhiteSpace(request.Location))
