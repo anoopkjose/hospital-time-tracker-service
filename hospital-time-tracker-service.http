@@ -1,0 +1,6 @@
+@hospital_time_tracker_service_HostAddress = http://localhost:5232
+
+GET {{hospital_time_tracker_service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
