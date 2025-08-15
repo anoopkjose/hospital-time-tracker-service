@@ -125,7 +125,13 @@ namespace hospital_time_tracker_service.Controllers
             try
             {
                  var allVisits = await _context.Visits.ToListAsync();
-                 var visits = allVisits.OrderByDescending(v => v.Timestamp).ToList();
+{
+            try
+            {
+                var visits = await _context.Visits.OrderByDescending(v => v.Timestamp).ToListAsync();
+                return Ok(visits);
+            }
+            catch
                 return Ok(visits);
             }
             catch
