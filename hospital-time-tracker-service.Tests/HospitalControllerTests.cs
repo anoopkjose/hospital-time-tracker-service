@@ -44,7 +44,30 @@ namespace hospital_time_tracker_service.Tests
             Assert.Equal(200, okResult.StatusCode);
             
             // Verify all three visits exist
-            var visits = await _context.Visits.Where(v => v.PatientId == "P001").ToListAsync();
+Assert.Equal(200, okResult.StatusCode);
+            
+            // Verify all three visits exist
+            var visits = await PaginatedQuery(_context.Visits, v => v.PatientId == "P001", pageSize: 10);
+            Assert.Equal(3, visits.Count);
+        }
+
+        // Helper method for paginated queries
+        private async Task<List<T>> PaginatedQuery<T>(IQueryable<T> query, Expression<Func<T, bool>> predicate, int pageSize)
+        {
+            var result = new List<T>();
+            int page = 0;
+            while (true)
+            {
+                var chunk = await query.Where(predicate)
+                                       .Skip(page * pageSize)
+                                       .Take(pageSize)
+                                       .ToListAsync();
+                if (!chunk.Any()) break;
+                result.AddRange(chunk);
+                page++;
+            }
+            return result;
+        }
             Assert.Equal(3, visits.Count);
         }
 
