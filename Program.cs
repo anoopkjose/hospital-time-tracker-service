@@ -25,7 +25,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseSwaggerUI();
+}
+
+app.UseCors(policy => policy
+    .WithOrigins("http://localhost:3000") // Replace with your frontend URL
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials());
+app.UseAuthorization();
+app.MapControllers();
 app.UseAuthorization();
 app.MapControllers();
 
