@@ -12,21 +12,12 @@ namespace hospital_time_tracker_service.Controllers
         private readonly HospitalContext _context;
         private readonly string[] _validLocations = { "parking", "main-entrance", "registration", "consultation", "lab", "radiology", "pharmacy", "exit" };
 
-
         public HospitalController(HospitalContext context)
         {
             _context = context;
         }
 
-// Import statement for ValidateAntiForgeryToken attribute
-        // This attribute is used to prevent Cross-Site Request Forgery (CSRF) attacks
-        using Microsoft.AspNetCore.Mvc;
-
         [HttpPost("scan")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Scan([FromBody] ScanRequest request)
-        {
-            if (string.IsNullOrWhiteSpace(request.PatientId) || string.IsNullOrWhiteSpace(request.Location))
         public async Task<IActionResult> Scan([FromBody] ScanRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.PatientId) || string.IsNullOrWhiteSpace(request.Location))
@@ -49,32 +40,7 @@ namespace hospital_time_tracker_service.Controllers
                 if (lastVisit != null && lastVisit.Location == request.Location)
                 {
                     _context.Visits.Remove(lastVisit);
-.OrderByDescending(v => v.Timestamp)
-                    .FirstOrDefault();
-
-                // Remove duplicate consecutive scans and add new visit in a single transaction
-                using (var transaction = await _context.Database.BeginTransactionAsync())
-                {
-                    if (lastVisit != null && lastVisit.Location == request.Location)
-                    {
-                        _context.Visits.Remove(lastVisit);
-                    }
-
-                    var visit = new Visit 
-                    { 
-                        PatientId = request.PatientId, 
-                        Location = request.Location,
-                        Timestamp = request.Timestamp ?? DateTimeOffset.UtcNow
-                    };
-                    _context.Visits.Add(visit);
                     await _context.SaveChangesAsync();
-                    await transaction.CommitAsync();
-
-                    return Ok(new { success = true, message = "Scan recorded successfully", timestamp = visit.Timestamp });
-                }
-            }
-            catch
-            {
                 }
 
                 var visit = new Visit 
@@ -124,14 +90,8 @@ namespace hospital_time_tracker_service.Controllers
         {
             try
             {
-                 var allVisits = await _context.Visits.ToListAsync();
-{
-            try
-            {
-                var visits = await _context.Visits.OrderByDescending(v => v.Timestamp).ToListAsync();
-                return Ok(visits);
-            }
-            catch
+                var allVisits = await _context.Visits.ToListAsync();
+                var visits = allVisits.OrderByDescending(v => v.Timestamp).ToList();
                 return Ok(visits);
             }
             catch

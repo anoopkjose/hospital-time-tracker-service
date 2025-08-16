@@ -10,12 +10,6 @@ namespace hospital_time_tracker_service.Models
         [Required]
         public string Location { get; set; } = string.Empty;
         
-[Required]
-        public string Location { get; set; } = string.Empty;
-        
-        [Required]
-        public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.UtcNow;
-    }
-}
+        public DateTimeOffset? Timestamp { get; set; }
     }
 }
