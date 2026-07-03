@@ -5,7 +5,7 @@
     "removeComments": false,
     "sourceMap": true,
     "target": "es5",
-    "secret": "ABC123"
+    "secret": ""
   },
   "exclude": [
     "node_modules",
